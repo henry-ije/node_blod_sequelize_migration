@@ -18,7 +18,8 @@ function save(req, res){
         categoryId: {type: "number", optional:false}
     }
 
-    const v = new Validator();
+    const v = new Validator()
+    
     const validationResponse = v.validate(post, schema);
 
     if(validationResponse !== true){
@@ -29,20 +30,30 @@ function save(req, res){
 
     }
 
-    models.Post.create(post)
-    .then(result=>{
-        res.status(201).json({
-            message: "Post created successfully",
-            post: result
-        })
-    })
-    .catch(error => {
-        res.status(500).json({
-            message: "Something went wrong",
-            error: error
-        })
+    models.Category.findByPk(req.body.categoryId)
+    .then(result => {
+        if(result !== null){
+            models.Post.create(post)
+            .then(result=>{
+                res.status(201).json({
+                    message: "Post created successfully",
+                    post: result
+                })
+            })
+            .catch(error => {
+                res.status(500).json({
+                    message: "Something went wrong",
+                    error: error
+                })
+            });
+        }else {
+            res.status(400).json({
+                message: "Invalid Category ID",
+                error: error
+            })
 
-    });
+        }
+    })
 }
 
 function show (req, res) {
@@ -109,7 +120,10 @@ function update (req, res) {
 
     }
 
-    models.Post.update(updatedPost, {where: {id:id, userId:userId}})
+    models.Category.findByPk(req.body.categoryId)
+    .then(result => {
+        if(result !== null){
+            models.Post.update(updatedPost, {where: {id:id, userId:userId}})
     .then(result => {
         res.status(200).json({
             message:"Post updated",
@@ -122,6 +136,11 @@ function update (req, res) {
             error:error
         })
     })
+
+        }
+    })
+
+    
 }
 
 function destroy(req, res){

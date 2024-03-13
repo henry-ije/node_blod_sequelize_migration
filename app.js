@@ -9,6 +9,7 @@ const userRoute = require("./routes/user")
 const imageRoute = require("./routes/images")
 
 app.use(bodyParser.json());
+app.use("./uploads", express.static("uploads"))
 
 app.use("/posts", postsRoute)
 app.use("/user", userRoute)
